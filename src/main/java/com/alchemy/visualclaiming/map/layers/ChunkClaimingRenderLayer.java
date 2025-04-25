@@ -17,7 +17,8 @@ public class ChunkClaimingRenderLayer extends RenderLayer {
     @Override
     public void render(double cameraX, double cameraZ, double scale) {
         for (FTBChunkClaimPosition chunk : visibleChunks) {
-            DrawUtils.drawOverlayBox(chunk.x, chunk.z, chunk.teamColor, chunk.teamColor);
+            int teamColor = (chunk.teamColor & 0x00FFFFFF) + 0x77000000;
+            DrawUtils.drawOverlayBox(chunk.x, chunk.z, teamColor, teamColor);
         }
     }
 

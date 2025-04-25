@@ -1,5 +1,6 @@
 package com.alchemy.visualclaiming.database;
 
+import com.alchemy.visualclaiming.VisualClaiming;
 import com.feed_the_beast.ftbutilities.gui.ClientClaimedChunks;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -13,7 +14,13 @@ public class VCDimensionCache {
     private final Object2ObjectMap<ChunkPos, FTBChunkClaimPosition> chunks = new Object2ObjectOpenHashMap<>();
 
     public void addChunkData(ChunkPos pos, ClientClaimedChunks.ChunkData chunkData) {
-        chunks.put(pos, new FTBChunkClaimPosition(pos, chunkData));
+        if (chunkData == null) {
+            VisualClaiming.LOGGER.warn("Chunk Data Null!");
+        } else chunks.put(pos, new FTBChunkClaimPosition(pos, chunkData));
+    }
+
+    public void addChunkData(ChunkPos pos, short uid, int flags, int teamColor, String teamName) {
+        chunks.put(pos, new FTBChunkClaimPosition(pos, uid, flags, teamColor, teamName));
     }
 
     public List<FTBChunkClaimPosition> getChunkClaimInArea(ChunkPos topLeft, ChunkPos bottomRight) {

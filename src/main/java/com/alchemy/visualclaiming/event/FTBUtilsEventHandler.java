@@ -1,6 +1,5 @@
 package com.alchemy.visualclaiming.event;
 
-import com.alchemy.visualclaiming.VisualClaiming;
 import com.alchemy.visualclaiming.database.VCClientCache;
 import com.feed_the_beast.ftblib.lib.client.ClientUtils;
 import com.feed_the_beast.ftblib.lib.gui.misc.ChunkSelectorMap;
@@ -22,24 +21,22 @@ import java.util.Map;
 @Mod.EventBusSubscriber()
 @SuppressWarnings("unused")
 public class FTBUtilsEventHandler {
-    private ChunkPos lastPosition;
+    private static ChunkPos lastPosition;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player.world.isRemote || !(event.player instanceof EntityPlayerMP mp)) return;
-        VisualClaiming.LOGGER.debug("Send Message!");
         new MessageClaimedChunksRequest(mp).sendToServer();
     }
 
     @SubscribeEvent
     public static void onPlayerClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
         if (event.getEntityPlayer().world.isRemote || !(event.getEntityPlayer() instanceof EntityPlayerMP mp)) return;
-        VisualClaiming.LOGGER.info("Send Message!");
         new MessageClaimedChunksRequest(mp).sendToServer();
     }
 
     @SubscribeEvent
-    public void onEnteringChunk(EntityEvent.EnteringChunk event)
+    public static void onEnteringChunk(EntityEvent.EnteringChunk event)
     {
         if (event.getEntity() != Minecraft.getMinecraft().player)
         {
@@ -49,7 +46,6 @@ public class FTBUtilsEventHandler {
         if (lastPosition == null || MathUtils.dist(event.getNewChunkX(), event.getNewChunkZ(), lastPosition.x, lastPosition.z) >= 3D)
         {
             lastPosition = new ChunkPos(event.getNewChunkX(), event.getNewChunkZ());
-            VisualClaiming.LOGGER.info("Send Message!");
             new MessageClaimedChunksRequest(Minecraft.getMinecraft().player).sendToServer();
         }
     }
@@ -57,24 +53,22 @@ public class FTBUtilsEventHandler {
 
     // Base on FTB Utilities JourneyMap integration, adapt for VisualOres Layer
     @SubscribeEvent
-    public void onDataRecived(UpdateClientDataEvent event) {
-        VisualClaiming.LOGGER.info("Get Message!");
+    public static void onDataReceived(UpdateClientDataEvent event) {
         MessageClaimedChunksUpdate message = event.getMessage();
-        ClientClaimedChunks.ChunkData[] data = new ClientClaimedChunks.ChunkData[ChunkSelectorMap.TILES_GUI * ChunkSelectorMap.TILES_GUI];
-
         int dim = ClientUtils.getDim();
         for (ClientClaimedChunks.Team team : message.teams.values()) {
             for (Map.Entry<Integer, ClientClaimedChunks.ChunkData> entry : team.chunks.entrySet())
             {
                 int x = entry.getKey() % ChunkSelectorMap.TILES_GUI;
                 int z = entry.getKey() / ChunkSelectorMap.TILES_GUI;
-                data[x + z * ChunkSelectorMap.TILES_GUI] = entry.getValue();
+                ClientClaimedChunks.ChunkData chunkData = entry.getValue();
+                VCClientCache.instance.addChunkData(dim, new ChunkPos(message.startX + x, message.startZ + z),
+                            chunkData.team.uid,
+                            chunkData.flags,
+                            chunkData.team.color.getColor().hashCode(),
+                            chunkData.team.nameComponent.getFormattedText());
             }
         }
-        for (int x = 0; x < ChunkSelectorMap.TILES_GUI; x++) {
-            for (int z = 0; z < ChunkSelectorMap.TILES_GUI; z++) {
-                VCClientCache.instance.addChunkData(dim, new ChunkPos(message.startX + x, message.startZ + z), data[x + z * ChunkSelectorMap.TILES_GUI]);
-            }
-        }
+
     }
 }

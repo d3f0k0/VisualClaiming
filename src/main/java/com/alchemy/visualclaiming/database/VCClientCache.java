@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class VCClientCache implements IClientCachePerDimOnly {
+public class   VCClientCache implements IClientCachePerDimOnly {
     public static final VCClientCache instance = new VCClientCache();
     private final Int2ObjectMap<VCDimensionCache> cache = new Int2ObjectArrayMap<>();
     @Override
@@ -25,6 +25,13 @@ public class VCClientCache implements IClientCachePerDimOnly {
             cache.put(dim, new VCDimensionCache());
         }
         cache.get(dim).addChunkData(pos, chunkData);
+    }
+
+    public void addChunkData(int dim, ChunkPos pos, short uid, int flags, int teamColor, String teamName) {
+        if (!cache.containsKey(dim)) {
+            cache.put(dim, new VCDimensionCache());
+        }
+        cache.get(dim).addChunkData(pos, uid, flags, teamColor, teamName);
     }
 
     public List<FTBChunkClaimPosition> getChunkClaimsInArea(int dim, int[] bounds) {
