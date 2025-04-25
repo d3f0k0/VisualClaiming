@@ -17,7 +17,6 @@ public class FTBChunkClaimPosition {
     public int teamColor;
     public String teamName;
 
-    //public ClientClaimedChunks.ChunkData chunkData;
     public List<String> tooltips;
 
     public FTBChunkClaimPosition(ChunkPos pos, ClientClaimedChunks.ChunkData chunkData) {
@@ -44,6 +43,9 @@ public class FTBChunkClaimPosition {
 
         tooltips = new ArrayList<>();
         tooltips.add(I18n.format("visualclaiming.team", teamName));
+        if (flags == 1) {
+            tooltips.add(I18n.format("visualclaiming.chunkedloaded"));
+        }
     }
 
     public NBTTagCompound toNBT() {

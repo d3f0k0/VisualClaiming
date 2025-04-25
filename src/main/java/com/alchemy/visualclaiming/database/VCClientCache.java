@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class   VCClientCache implements IClientCachePerDimOnly {
+public class VCClientCache implements IClientCachePerDimOnly {
     public static final VCClientCache instance = new VCClientCache();
     private final Int2ObjectMap<VCDimensionCache> cache = new Int2ObjectArrayMap<>();
     @Override
