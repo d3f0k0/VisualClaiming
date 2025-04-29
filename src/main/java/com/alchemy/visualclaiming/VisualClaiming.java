@@ -2,7 +2,6 @@ package com.alchemy.visualclaiming;
 
 import com.alchemy.visualclaiming.database.VCClientCache;
 import com.alchemy.visualclaiming.map.layers.ChunkClaimingRenderLayer;
-import com.alchemy.visualclaiming.network.VisualClaimingNetHandler;
 import hellfall.visualores.database.ClientCacheManager;
 import hellfall.visualores.map.layers.Layers;
 import net.minecraft.block.Block;
@@ -26,7 +25,6 @@ public class VisualClaiming {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        VisualClaimingNetHandler.init();
         Layers.registerLayer(ChunkClaimingRenderLayer.class, "chunk_claiming");
         ClientCacheManager.registerClientCache(VCClientCache.instance, "visual_claiming");
     }

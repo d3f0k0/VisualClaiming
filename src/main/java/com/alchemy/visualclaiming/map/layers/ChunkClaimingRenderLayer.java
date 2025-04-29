@@ -5,12 +5,14 @@ import com.alchemy.visualclaiming.database.VCClientCache;
 import hellfall.visualores.map.DrawUtils;
 import hellfall.visualores.map.layers.RenderLayer;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Mod.EventBusSubscriber()
 public class ChunkClaimingRenderLayer extends RenderLayer {
-    List<FTBChunkClaimPosition> visibleChunks = new ArrayList<>();
+    public List<FTBChunkClaimPosition> visibleChunks = new ArrayList<>();
     private FTBChunkClaimPosition hoveredChunk;
     public ChunkClaimingRenderLayer(String key) {
         super(key);
@@ -34,6 +36,7 @@ public class ChunkClaimingRenderLayer extends RenderLayer {
     public void updateVisibleArea(int dimensionID, int[] visibleBounds) {
         visibleChunks = VCClientCache.instance.getChunkClaimsInArea(dimensionID, visibleBounds);
     }
+
 
     @Override
     public void updateHovered(double mouseX, double mouseY, double cameraX, double cameraZ, double scale) {

@@ -1,7 +1,5 @@
 package com.alchemy.visualclaiming.database;
 
-import com.alchemy.visualclaiming.VisualClaiming;
-import com.feed_the_beast.ftbutilities.gui.ClientClaimedChunks;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,14 +11,12 @@ import java.util.List;
 public class VCDimensionCache {
     private final Object2ObjectMap<ChunkPos, FTBChunkClaimPosition> chunks = new Object2ObjectOpenHashMap<>();
 
-    public void addChunkData(ChunkPos pos, ClientClaimedChunks.ChunkData chunkData) {
-        if (chunkData == null) {
-            VisualClaiming.LOGGER.warn("Chunk Data Null!");
-        } else chunks.put(pos, new FTBChunkClaimPosition(pos, chunkData));
-    }
-
     public void addChunkData(ChunkPos pos, short uid, int flags, int teamColor, String teamName) {
         chunks.put(pos, new FTBChunkClaimPosition(pos, uid, flags, teamColor, teamName));
+    }
+
+    public void removeChunkData(ChunkPos pos) {
+        chunks.remove(pos);
     }
 
     public List<FTBChunkClaimPosition> getChunkClaimInArea(ChunkPos topLeft, ChunkPos bottomRight) {
@@ -50,10 +46,11 @@ public class VCDimensionCache {
             ChunkPos key = new ChunkPos(Integer.parseInt(splitpos[0]), Integer.parseInt(splitpos[1]));
             NBTTagCompound chunkNBT = nbt.getCompoundTag(nbtKey);
             chunks.put(key, new FTBChunkClaimPosition(key,
-                        new ClientClaimedChunks.ChunkData(
-                                new ClientClaimedChunks.Team(chunkNBT.getShort("team")),
-                                chunkNBT.getInteger("flag"))
-            ));
+                        chunkNBT.getShort("team"),
+                        chunkNBT.getInteger("flag"),
+                        chunkNBT.getInteger("team_color"),
+                        chunkNBT.getString("team_name"))
+            );
         }
     }
 }

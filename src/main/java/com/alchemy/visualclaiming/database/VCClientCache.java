@@ -1,6 +1,5 @@
 package com.alchemy.visualclaiming.database;
 
-import com.feed_the_beast.ftbutilities.gui.ClientClaimedChunks;
 import hellfall.visualores.database.IClientCachePerDimOnly;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -20,19 +19,20 @@ public class VCClientCache implements IClientCachePerDimOnly {
         addDimFiles("visualclaiming_");
     }
 
-    public void addChunkData(int dim, ChunkPos pos, ClientClaimedChunks.ChunkData chunkData) {
-        if (!cache.containsKey(dim)) {
-            cache.put(dim, new VCDimensionCache());
-        }
-        cache.get(dim).addChunkData(pos, chunkData);
-    }
-
     public void addChunkData(int dim, ChunkPos pos, short uid, int flags, int teamColor, String teamName) {
         if (!cache.containsKey(dim)) {
             cache.put(dim, new VCDimensionCache());
         }
         cache.get(dim).addChunkData(pos, uid, flags, teamColor, teamName);
     }
+
+    public void removeChunkData(int dim, ChunkPos pos) {
+        if (!cache.containsKey(dim)) {
+            cache.put(dim, new VCDimensionCache());
+        }
+        cache.get(dim).removeChunkData(pos);
+    }
+
 
     public List<FTBChunkClaimPosition> getChunkClaimsInArea(int dim, int[] bounds) {
         if (cache.containsKey(dim)) {
@@ -41,7 +41,7 @@ public class VCClientCache implements IClientCachePerDimOnly {
                     new ChunkPos((bounds[0] + bounds[2]) >> 4, (bounds[1] + bounds[3]) >> 4));
         }
         return new ArrayList<>();
-    };
+    }
 
     @Override
     public void clear() {
